@@ -71,7 +71,7 @@ Clean the tweet text
 '''
 def cleanText(txt):
     txt = re.sub(r"RT[\s]+", "", txt)
-    txt = txt.replace("\n", "")
+    txt = txt.replace("\n", " ")
     txt = re.sub(" +", " ", txt)
     txt = re.sub(r"https?:\/\/\S+", "", txt)
     txt = re.sub(r"(@[A-Za-z0–9_]+)|[^\w\s]|#", "", txt)
