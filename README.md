@@ -1,7 +1,6 @@
 # NLP: Twitter Sentiment Analysis
 Using Python and Machine Learning
-
-Blog post I made on the creation of this project: https://medium.com/p/4b4a8fc1e2b/edit
+- Blog post I made on the creation of this project: https://medium.com/p/4b4a8fc1e2b/edit
 ## Setup
 To setup your computer, follow these steps:
 
