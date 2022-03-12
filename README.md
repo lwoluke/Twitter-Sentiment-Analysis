@@ -14,5 +14,5 @@ To setup your computer, follow these steps:
   - Access Token Secret
 5) Clone this repo using the command:
 ```
-"git clone git@github.com:lwoluke/Twitter-Sentiment-Analysis.git"
+git clone "git@github.com:lwoluke/Twitter-Sentiment-Analysis.git"
 ```
