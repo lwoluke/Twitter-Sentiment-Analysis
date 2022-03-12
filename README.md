@@ -16,4 +16,4 @@ To setup your computer, follow these steps:
 ```
 git clone "git@github.com:lwoluke/Twitter-Sentiment-Analysis.git"
 ```
-When running the SentimentAnalysis.py file, just the screen_name parameter needs to be changed in order to output all visualizations.
+When running the SentimentAnalysis.py file, just the screen_name parameter needs to be changed in order to output all visualizations for a specified user.
