@@ -46,7 +46,7 @@ authenticate.set_access_token(accessToken, accessTokenSecret)
 api = tweepy.API(authenticate, wait_on_rate_limit = True)
 
 # Extract n tweets from specified Twitter account
-posts = api.user_timeline(screen_name = "nike", count = 100, tweet_mode = "extended")
+posts = api.user_timeline(screen_name = "youtube", count = 100, tweet_mode = "extended")
 
 # Show the most recent tweets from account
 count = 1
@@ -209,7 +209,7 @@ plt.xticks(fontsize = 14)
 plt.ylabel("Counts", fontsize = 18)
 plt.yticks(fontsize = 14)
 
-my_colors = list(islice(['y', 'g', 'r'], None, 3))
+my_colors = list(islice(['g', 'y', 'r'], None, 3))
 
 df["Analysis"].value_counts().plot(kind = "bar", stacked=True, color=my_colors)
 
