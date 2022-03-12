@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-This is a Twitter Sentiment Analysis program
+Twitter Sentiment Analysis using NLP and ML
 - tweets are fetched then parsed using Python
 @author: lwolu
 """
@@ -48,11 +48,11 @@ api = tweepy.API(authenticate, wait_on_rate_limit = True)
 posts = api.user_timeline(screen_name = "nike", count = 100, tweet_mode = "extended")
 
 # Show the most recent tweets from account
-#print("MOST RECENT TWEETS: \n")
+print("MOST RECENT TWEETS: \n")
 count = 1
 
 for tweet in posts[0:2]:
-    #print("TWEET #" + str(count) + ": " + tweet.full_text + "\n")
+    print("TWEET #" + str(count) + ": " + tweet.full_text + "\n")
     count += 1
     
 # Generate dataframe for tweets column
@@ -106,14 +106,14 @@ Visualize the most common words through
 1. Word cloud
 2. Word bar graph
 '''
-#allWords = " ".join([tweets for tweets in df["Tweets"]])
-#cloud = WordCloud(width = 900, height = 600, 
-#                      random_state = 16, max_font_size = 150).generate(allWords)
+allWords = " ".join([tweets for tweets in df["Tweets"]])
+cloud = WordCloud(width = 900, height = 600, 
+                      random_state = 16, max_font_size = 150).generate(allWords)
 
-#plt.imshow(cloud, interpolation = "bilinear")
-#plt.axis("off")
+plt.imshow(cloud, interpolation = "bilinear")
+plt.axis("off")
 
-#plt.show()
+plt.show()
 
 def wordFreqBarGraph(df,column,title):
     
@@ -130,8 +130,8 @@ def wordFreqBarGraph(df,column,title):
     
     plt.show()
     
-#plt.figure(figsize=(10,10))
-#wordFreqBarGraph(df,"Tweets","Popular Words from User")
+plt.figure(figsize=(10,10))
+wordFreqBarGraph(df,"Tweets","Popular Words from User")
 
 '''
 Determine if the tweet is negative, neutral, or positive
@@ -150,35 +150,35 @@ df["Analysis"] = df["Polarity"].apply(getAnalysis)
 # Print only positive tweets in ascending order
 count = 1
 
-#print("ONLY POSITIVE TWEETS: \n")
+print("ONLY POSITIVE TWEETS: \n")
 
-#sortedDF = df.sort_values(by = ["Polarity"])
-#for i in range(0, sortedDF.shape[0]):
-    #if sortedDF["Analysis"][i] == "Positive":
-    #    print("TWEET #" + str(count) + ": " + sortedDF["Tweets"][i] + "\n")
-    #count += 1
+sortedDF = df.sort_values(by = ["Polarity"])
+for i in range(0, sortedDF.shape[0]):
+    if sortedDF["Analysis"][i] == "Positive":
+        print("TWEET #" + str(count) + ": " + sortedDF["Tweets"][i] + "\n")
+    count += 1
     
 # Print only negative tweets in descending order
 count = 1
 
 #print("ONLY NEGATIVE TWEETS: \n")
 
-#sortedDF = df.sort_values(by = ["Polarity"], ascending = "False")
-#for i in range(0, sortedDF.shape[0]):
-#    if sortedDF["Analysis"][i] == "Negative":
-#        print("TWEET #" + str(count) + ": " + sortedDF["Tweets"][i] + "\n")
-#    count += 1
+sortedDF = df.sort_values(by = ["Polarity"], ascending = "False")
+for i in range(0, sortedDF.shape[0]):
+    if sortedDF["Analysis"][i] == "Negative":
+        print("TWEET #" + str(count) + ": " + sortedDF["Tweets"][i] + "\n")
+    count += 1
     
 # Create polarity and subjectivity visualization
-#plt.figure(figsize = (8, 6))
-#for i in range(0, df.shape[0]):
-#    plt.scatter(df["Polarity"][i], df["Subjectivity"][i], color = "Navy")
+plt.figure(figsize = (8, 6))
+for i in range(0, df.shape[0]):
+    plt.scatter(df["Polarity"][i], df["Subjectivity"][i], color = "Navy")
     
-#plt.title("Sentiment Analysis")
-#plt.xlabel("Polarity")
-#plt.ylabel("Subjectivity")
+plt.title("Sentiment Analysis")
+plt.xlabel("Polarity")
+plt.ylabel("Subjectivity")
 
-#plt.show()
+plt.show()
 
 # Get positive tweets percentage
 
@@ -212,4 +212,3 @@ my_colors = list(islice(['y', 'g', 'r'], None, 3))
 df["Analysis"].value_counts().plot(kind = "bar", stacked=True, color=my_colors)
 
 plt.show()
-
