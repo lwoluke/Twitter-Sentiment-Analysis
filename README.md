@@ -1,5 +1,5 @@
-# Twitter Sentiment Analysis
-Using Python, with NLP and ML techniques
+# NLP: Twitter Sentiment Analysis
+Using Python and Machine Learning
 
 ## Setup
 To setup your computer, follow these steps:
