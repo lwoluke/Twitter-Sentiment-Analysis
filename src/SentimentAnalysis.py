@@ -211,6 +211,6 @@ plt.yticks(fontsize = 14)
 
 my_colors = list(islice(['g', 'y', 'r'], None, 3))
 
-df["Analysis"].value_counts().plot(kind = "bar", stacked=True, color=my_colors)
+df["Analysis"].value_counts().plot(kind = "bar", stacked = True, color = my_colors)
 
 plt.show()
