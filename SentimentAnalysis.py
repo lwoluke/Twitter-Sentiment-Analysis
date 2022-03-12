@@ -2,6 +2,7 @@
 """
 Twitter Sentiment Analysis using NLP and ML
 - tweets are fetched then parsed using Python
+
 @author: lwolu
 """
 
@@ -48,8 +49,9 @@ api = tweepy.API(authenticate, wait_on_rate_limit = True)
 posts = api.user_timeline(screen_name = "nike", count = 100, tweet_mode = "extended")
 
 # Show the most recent tweets from account
-print("MOST RECENT TWEETS: \n")
 count = 1
+
+print("MOST RECENT TWEETS: \n")
 
 for tweet in posts[0:2]:
     print("TWEET #" + str(count) + ": " + tweet.full_text + "\n")
@@ -107,9 +109,9 @@ Visualize the most common words through
 2. Word bar graph
 '''
 allWords = " ".join([tweets for tweets in df["Tweets"]])
+
 cloud = WordCloud(width = 900, height = 600, 
                       random_state = 16, max_font_size = 150).generate(allWords)
-
 plt.imshow(cloud, interpolation = "bilinear")
 plt.axis("off")
 
