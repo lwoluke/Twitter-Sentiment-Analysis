@@ -17,4 +17,4 @@ git clone "git@github.com:lwoluke/Twitter-Sentiment-Analysis.git"
 ```
 When running the SentimentAnalysis.py file, just the screen_name parameter needs to be changed in order to output all visualizations for a specified user.
 
-### Blog post I made on the creation of this project: https://medium.com/@luke_o/nlp-twitter-sentiment-analysis-using-python-ml-4b4a8fc1e2b
+#### Blog post I made on the creation of this project: https://medium.com/@luke_o/nlp-twitter-sentiment-analysis-using-python-ml-4b4a8fc1e2b
