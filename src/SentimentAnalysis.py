@@ -46,7 +46,7 @@ authenticate.set_access_token(accessToken, accessTokenSecret)
 api = tweepy.API(authenticate, wait_on_rate_limit = True)
 
 # Extract n tweets from specified Twitter account
-posts = api.user_timeline(screen_name = "youtube", count = 100, tweet_mode = "extended")
+posts = api.user_timeline(screen_name = "realMeetKevin", count = 250, tweet_mode = "extended")
 
 # Show the most recent tweets from account
 count = 1
@@ -69,7 +69,7 @@ Clean the tweet text
     4. Emojis
     5. RT (Retweets)
 '''
-def cleanText(txt):
+def clean_text(txt):
     txt = re.sub(r"RT[\s]+", "", txt)
     txt = txt.replace("\n", " ")
     txt = re.sub(" +", " ", txt)
@@ -81,7 +81,7 @@ def cleanText(txt):
 
 
 # Cleaning tweet text
-df["Tweets"] = df["Tweets"].apply(cleanText)
+df["Tweets"] = df["Tweets"].apply(clean_text)
 
 '''
 Create two additional columns for subjectivity and polarity:
@@ -93,14 +93,14 @@ Create two additional columns for subjectivity and polarity:
       where -1 is negative, 0 is neutral, and 1 is positive 
       
 '''
-def getSubjectivity(txt):
+def get_subjectivity(txt):
     return TextBlob(txt).sentiment.subjectivity
 
-def getPolarity(txt):
+def get_polarity(txt):
     return TextBlob(txt).sentiment.polarity
 
-df["Subjectivity"] = df["Tweets"].apply(getSubjectivity)
-df["Polarity"] = df["Tweets"].apply(getPolarity)
+df["Subjectivity"] = df["Tweets"].apply(get_subjectivity)
+df["Polarity"] = df["Tweets"].apply(get_polarity)
 pd.set_option('display.max_columns', 4)
 
 '''
@@ -117,7 +117,7 @@ plt.axis("off")
 
 plt.show()
 
-def wordFreqBarGraph(df,column,title):
+def word_freq_bar_graph(df,column,title):
     
     topic_words = [ z.lower() for y in
                   [ x.split() for x in df[column] if isinstance(x, str)]
@@ -133,13 +133,13 @@ def wordFreqBarGraph(df,column,title):
     plt.show()
     
 plt.figure(figsize=(10,10))
-wordFreqBarGraph(df,"Tweets","Popular Words from User")
+word_freq_bar_graph(df,"Tweets","Popular Words from User")
 
 '''
 Determine if the tweet is negative, neutral, or positive
 - Uses the polarity: floating point number [-1, 1]
 '''
-def getAnalysis(score):
+def get_analysis(score):
     if score > 0:
         return "Positive"
     elif score == 0:
@@ -147,7 +147,7 @@ def getAnalysis(score):
     else:
         return "Negative"
     
-df["Analysis"] = df["Polarity"].apply(getAnalysis)
+df["Analysis"] = df["Polarity"].apply(get_analysis)
     
 # Print only positive tweets in ascending order
 count = 1
@@ -211,6 +211,6 @@ plt.yticks(fontsize = 14)
 
 my_colors = list(islice(['g', 'y', 'r'], None, 3))
 
-df["Analysis"].value_counts().plot(kind = "bar", stacked = True, color = my_colors)
+df["Analysis"].value_counts().plot(kind = "bar", stacked=True, color=my_colors)
 
 plt.show()
