@@ -60,16 +60,17 @@ for tweet in posts[0:2]:
 # Generate dataframe for tweets column
 df = pd.DataFrame([tweet.full_text for tweet in posts], columns=["Tweets"])
 
-'''
-Clean the tweet text
-- Remove: 
-    1. # Hash character (Not the whole hashtag)
-    2. Hyperlinks
-    3. Usernames
-    4. Emojis
-    5. RT (Retweets)
-'''
 def clean_text(txt):
+    '''
+    Clean the tweet text
+    - Remove: 
+        1. # Hash character (Not the whole hashtag)
+        2. Hyperlinks
+        3. Usernames
+        4. Emojis
+        5. RT (Retweets)
+    '''
+    
     txt = re.sub(r"RT[\s]+", "", txt)
     txt = txt.replace("\n", " ")
     txt = re.sub(" +", " ", txt)
@@ -77,26 +78,28 @@ def clean_text(txt):
     txt = re.sub(r"(@[A-Za-z0–9_]+)|[^\w\s]|#", "", txt)
     txt = emoji.replace_emoji(txt, replace='')
     txt.strip()
+    
     return txt
-
 
 # Cleaning tweet text
 df["Tweets"] = df["Tweets"].apply(clean_text)
 
-'''
-Create two additional columns for subjectivity and polarity:
-    
-  subjectivity -> degree of opinion in tweet text [0, 1] where
-      0 represents factual information and 1 represents personal opinion
-      
-  polarity -> floating point number [-1, 1] representing statements 
-      where -1 is negative, 0 is neutral, and 1 is positive 
-      
-'''
+
+#Create two additional columns for subjectivity and polarity:     
 def get_subjectivity(txt):
+    '''
+    degree of opinion in tweet text [0, 1] where
+    0 represents factual information and 1 represents personal opinion
+    '''
+    
     return TextBlob(txt).sentiment.subjectivity
 
 def get_polarity(txt):
+    '''
+    floating point number [-1, 1] representing statements 
+    where -1 is negative, 0 is neutral, and 1 is positive
+    '''
+    
     return TextBlob(txt).sentiment.polarity
 
 df["Subjectivity"] = df["Tweets"].apply(get_subjectivity)
@@ -118,6 +121,9 @@ plt.axis("off")
 plt.show()
 
 def word_freq_bar_graph(df,column,title):
+    '''
+    Generates a bar graph of word frequencies in descending order
+    '''
     
     topic_words = [ z.lower() for y in
                   [ x.split() for x in df[column] if isinstance(x, str)]
@@ -135,15 +141,18 @@ def word_freq_bar_graph(df,column,title):
 plt.figure(figsize=(10,10))
 word_freq_bar_graph(df,"Tweets","Popular Words from User")
 
-'''
-Determine if the tweet is negative, neutral, or positive
-- Uses the polarity: floating point number [-1, 1]
-'''
 def get_analysis(score):
+    '''
+    Determine if the tweet is negative, neutral, or positive
+    Uses the polarity: floating point number [-1, 1]
+    '''
+    
     if score > 0:
         return "Positive"
+    
     elif score == 0:
         return "Neutral"
+    
     else:
         return "Negative"
     
