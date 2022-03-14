@@ -48,14 +48,17 @@ api = tweepy.API(authenticate, wait_on_rate_limit = True)
 # Extract n tweets from specified Twitter account
 posts = api.user_timeline(screen_name = "realMeetKevin", count = 250, tweet_mode = "extended")
 
-# Show the most recent tweets from account
-count = 1
+def generate_tweets():
+    '''Show the most recent tweets from account'''
+    count = 1
+    
+    print("MOST RECENT TWEETS: \n")
+    
+    for tweet in posts[0:2]:
+        print("TWEET #" + str(count) + ": " + tweet.full_text + "\n")
+        count += 1
 
-print("MOST RECENT TWEETS: \n")
-
-for tweet in posts[0:2]:
-    print("TWEET #" + str(count) + ": " + tweet.full_text + "\n")
-    count += 1
+generate_tweets()
     
 # Generate dataframe for tweets column
 df = pd.DataFrame([tweet.full_text for tweet in posts], columns=["Tweets"])
@@ -158,68 +161,88 @@ def get_analysis(score):
     
 df["Analysis"] = df["Polarity"].apply(get_analysis)
     
-# Print only positive tweets in ascending order
-count = 1
-
-print("ONLY POSITIVE TWEETS: \n")
-
-sortedDF = df.sort_values(by = ["Polarity"])
-for i in range(0, sortedDF.shape[0]):
-    if sortedDF["Analysis"][i] == "Positive":
-        print("TWEET #" + str(count) + ": " + sortedDF["Tweets"][i] + "\n")
-    count += 1
+def positive_tweets_only():
+    ''' Print only positive tweets in ascending order '''
     
-# Print only negative tweets in descending order
-count = 1
-
-#print("ONLY NEGATIVE TWEETS: \n")
-
-sortedDF = df.sort_values(by = ["Polarity"], ascending = "False")
-for i in range(0, sortedDF.shape[0]):
-    if sortedDF["Analysis"][i] == "Negative":
-        print("TWEET #" + str(count) + ": " + sortedDF["Tweets"][i] + "\n")
-    count += 1
+    print("ONLY POSITIVE TWEETS: \n")
+    count = 1
     
-# Create polarity and subjectivity visualization
-plt.figure(figsize = (8, 6))
-for i in range(0, df.shape[0]):
-    plt.scatter(df["Polarity"][i], df["Subjectivity"][i], color = "Navy")
+    sortedDF = df.sort_values(by = ["Polarity"])
+    for i in range(0, sortedDF.shape[0]):
+        if sortedDF["Analysis"][i] == "Positive":
+            print("TWEET #" + str(count) + ": " + sortedDF["Tweets"][i] + "\n")
+        count += 1
+        
+positive_tweets_only()
+
+def negative_tweets_only():
+    '''Print only negative tweets in descending order'''
     
-plt.title("Sentiment Analysis")
-plt.xlabel("Polarity")
-plt.ylabel("Subjectivity")
+    print("ONLY NEGATIVE TWEETS: \n")
+    count = 1
+    
+    sortedDF = df.sort_values(by = ["Polarity"], ascending = "False")
+    for i in range(0, sortedDF.shape[0]):
+        if sortedDF["Analysis"][i] == "Negative":
+            print("TWEET #" + str(count) + ": " + sortedDF["Tweets"][i] + "\n")
+        count += 1
+        
+negative_tweets_only()
+    
+def polarity_subjectivity_vis():
+    '''Create polarity and subjectivity visualization'''
+    
+    plt.figure(figsize = (8, 6))
+    for i in range(0, df.shape[0]):
+        plt.scatter(df["Polarity"][i], df["Subjectivity"][i], color = "Navy")
+        
+    plt.title("Sentiment Analysis")
+    plt.xlabel("Polarity")
+    plt.ylabel("Subjectivity")
+    
+    plt.show()
 
-plt.show()
+polarity_subjectivity_vis()
 
-# Get positive tweets percentage
+def pos_tweets_percentage():
+    '''Get positive tweets percentage'''
+    
+    positiveTweets = df[df.Analysis == "Positive"]
+    positiveTweets = positiveTweets["Tweets"]
+    
+    positiveTweets = round((positiveTweets.shape[0] / df.shape[0]) * 100, 2)
+    
+    print("% OF POSITIVE TWEETS: " + str(positiveTweets))
 
-positiveTweets = df[df.Analysis == "Positive"]
-positiveTweets = positiveTweets["Tweets"]
+pos_tweets_percentage()
 
-positiveTweets = round((positiveTweets.shape[0] / df.shape[0]) * 100, 2)
-
-print("% OF POSITIVE TWEETS: " + str(positiveTweets))
-
-# Get negative tweets percentage
-negativeTweets = df[df.Analysis == "Negative"]
-negativeTweets = negativeTweets["Tweets"]
-
-negativeTweets = round((negativeTweets.shape[0] / df.shape[0]) * 100, 2)
-
-print("% OF NEGATIVE TWEETS: " + str(negativeTweets))
+def neg_tweets_percentage():
+    '''Get negative tweets percentage'''
+    
+    negativeTweets = df[df.Analysis == "Negative"]
+    negativeTweets = negativeTweets["Tweets"]
+    
+    negativeTweets = round((negativeTweets.shape[0] / df.shape[0]) * 100, 2)
+    
+    print("% OF NEGATIVE TWEETS: " + str(negativeTweets))
+    
+neg_tweets_percentage()
 
 # Value counts
 df["Analysis"].value_counts()
 
-# Create tweet count sentiment visualization
-plt.title("Sentiment Analysis", fontsize = 22)
-plt.xlabel("Sentiment", fontsize = 18)
-plt.xticks(fontsize = 14)
-plt.ylabel("Counts", fontsize = 18)
-plt.yticks(fontsize = 14)
-
-my_colors = list(islice(['g', 'y', 'r'], None, 3))
-
-df["Analysis"].value_counts().plot(kind = "bar", stacked=True, color=my_colors)
-
-plt.show()
+def count_tweet_sentiment_vis():
+    '''Create tweet count sentiment visualization'''
+    plt.title("Sentiment Analysis", fontsize = 22)
+    plt.xlabel("Sentiment", fontsize = 18)
+    plt.xticks(fontsize = 14)
+    plt.ylabel("Counts", fontsize = 18)
+    plt.yticks(fontsize = 14)
+    
+    my_colors = list(islice(['g', 'y', 'r'], None, 3))
+    
+    df["Analysis"].value_counts().plot(kind = "bar", stacked=True, color=my_colors)
+    
+    plt.show()
+    
+count_tweet_sentiment_vis()
