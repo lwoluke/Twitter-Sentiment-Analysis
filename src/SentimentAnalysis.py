@@ -20,48 +20,16 @@ import re
 import matplotlib.pyplot as plt
 from itertools import cycle, islice
 
-'''
-Specify plot style 
-- Full list at https://www.dunderdata.com/blog/view-all-available-matplotlib-styles
-'''
-plt.style.use('seaborn')
-
-# Store csv file containing the Twitter API key information
-log = "C:/Users/lwolu/OneDrive/Documents"\
-        "/Projects/TwitterAPI_Keys.csv"
-
-# Get specific credentials for the Twitter API 
-keys = open(log).read().splitlines()
-     
-consumerKey = keys[0]
-consumerSecret = keys[1]
-accessToken = keys[2]
-accessTokenSecret = keys[3]
-
-# Set authentication and access token
-authenticate = tweepy.OAuthHandler(consumerKey, consumerSecret)
-authenticate.set_access_token(accessToken, accessTokenSecret)
-
-# Create Twitter API using authentication information
-api = tweepy.API(authenticate, wait_on_rate_limit = True)
-
-# Extract n tweets from specified Twitter account
-posts = api.user_timeline(screen_name = "realMeetKevin", count = 250, tweet_mode = "extended")
-
-def generate_tweets():
+def generate_tweets(posts, num):
     '''Show the most recent tweets from account'''
     count = 1
     
     print("MOST RECENT TWEETS: \n")
     
-    for tweet in posts[0:2]:
+    for tweet in posts[0:num]:
         print("TWEET #" + str(count) + ": " + tweet.full_text + "\n")
         count += 1
 
-generate_tweets()
-    
-# Generate dataframe for tweets column
-df = pd.DataFrame([tweet.full_text for tweet in posts], columns=["Tweets"])
 
 def clean_text(txt):
     '''
@@ -73,7 +41,6 @@ def clean_text(txt):
         4. Emojis
         5. RT (Retweets)
     '''
-    
     txt = re.sub(r"RT[\s]+", "", txt)
     txt = txt.replace("\n", " ")
     txt = re.sub(" +", " ", txt)
@@ -84,11 +51,7 @@ def clean_text(txt):
     
     return txt
 
-# Cleaning tweet text
-df["Tweets"] = df["Tweets"].apply(clean_text)
-
-
-#Create two additional columns for subjectivity and polarity:     
+   
 def get_subjectivity(txt):
     '''
     degree of opinion in tweet text [0, 1] where
@@ -96,6 +59,7 @@ def get_subjectivity(txt):
     '''
     
     return TextBlob(txt).sentiment.subjectivity
+
 
 def get_polarity(txt):
     '''
@@ -105,23 +69,18 @@ def get_polarity(txt):
     
     return TextBlob(txt).sentiment.polarity
 
-df["Subjectivity"] = df["Tweets"].apply(get_subjectivity)
-df["Polarity"] = df["Tweets"].apply(get_polarity)
-pd.set_option('display.max_columns', 4)
 
-'''
-Visualize the most common words through
-1. Word cloud
-2. Word bar graph
-'''
-allWords = " ".join([tweets for tweets in df["Tweets"]])
+def word_cloud(df):
+    
+    allWords = " ".join([tweets for tweets in df["Tweets"]])
+    
+    cloud = WordCloud(width = 900, height = 600, 
+                          random_state = 16, max_font_size = 150).generate(allWords)
+    plt.imshow(cloud, interpolation = "bilinear")
+    plt.axis("off")
+    
+    plt.show()
 
-cloud = WordCloud(width = 900, height = 600, 
-                      random_state = 16, max_font_size = 150).generate(allWords)
-plt.imshow(cloud, interpolation = "bilinear")
-plt.axis("off")
-
-plt.show()
 
 def word_freq_bar_graph(df,column,title):
     '''
@@ -141,8 +100,6 @@ def word_freq_bar_graph(df,column,title):
     
     plt.show()
     
-plt.figure(figsize=(10,10))
-word_freq_bar_graph(df,"Tweets","Popular Words from User")
 
 def get_analysis(score):
     '''
@@ -159,9 +116,8 @@ def get_analysis(score):
     else:
         return "Negative"
     
-df["Analysis"] = df["Polarity"].apply(get_analysis)
-    
-def positive_tweets_only():
+
+def positive_tweets_only(df):
     ''' Print only positive tweets in ascending order '''
     
     print("ONLY POSITIVE TWEETS: \n")
@@ -173,9 +129,8 @@ def positive_tweets_only():
             print("TWEET #" + str(count) + ": " + sortedDF["Tweets"][i] + "\n")
         count += 1
         
-positive_tweets_only()
 
-def negative_tweets_only():
+def negative_tweets_only(df):
     '''Print only negative tweets in descending order'''
     
     print("ONLY NEGATIVE TWEETS: \n")
@@ -187,9 +142,8 @@ def negative_tweets_only():
             print("TWEET #" + str(count) + ": " + sortedDF["Tweets"][i] + "\n")
         count += 1
         
-negative_tweets_only()
     
-def polarity_subjectivity_vis():
+def polarity_subjectivity_vis(df):
     '''Create polarity and subjectivity visualization'''
     
     plt.figure(figsize = (8, 6))
@@ -202,9 +156,8 @@ def polarity_subjectivity_vis():
     
     plt.show()
 
-polarity_subjectivity_vis()
 
-def pos_tweets_percentage():
+def pos_tweets_percentage(df):
     '''Get positive tweets percentage'''
     
     positiveTweets = df[df.Analysis == "Positive"]
@@ -214,9 +167,8 @@ def pos_tweets_percentage():
     
     print("% OF POSITIVE TWEETS: " + str(positiveTweets))
 
-pos_tweets_percentage()
 
-def neg_tweets_percentage():
+def neg_tweets_percentage(df):
     '''Get negative tweets percentage'''
     
     negativeTweets = df[df.Analysis == "Negative"]
@@ -226,12 +178,8 @@ def neg_tweets_percentage():
     
     print("% OF NEGATIVE TWEETS: " + str(negativeTweets))
     
-neg_tweets_percentage()
 
-# Value counts
-df["Analysis"].value_counts()
-
-def count_tweet_sentiment_vis():
+def count_tweet_sentiment_vis(df):
     '''Create tweet count sentiment visualization'''
     plt.title("Sentiment Analysis", fontsize = 22)
     plt.xlabel("Sentiment", fontsize = 18)
@@ -245,4 +193,79 @@ def count_tweet_sentiment_vis():
     
     plt.show()
     
-count_tweet_sentiment_vis()
+
+def main():
+    '''
+    Specify plot style 
+    - Full list at https://www.dunderdata.com/blog/view-all-available-matplotlib-styles
+    '''
+    plt.style.use('seaborn')
+
+    # Store csv file containing the Twitter API key information
+    log = "C:/Users/lwolu/OneDrive/Documents"\
+            "/Projects/TwitterAPI_Keys.csv"
+
+    # Get specific credentials for the Twitter API 
+    keys = open(log).read().splitlines()
+         
+    consumerKey = keys[0]
+    consumerSecret = keys[1]
+    accessToken = keys[2]
+    accessTokenSecret = keys[3]
+
+    # Set authentication and access token
+    authenticate = tweepy.OAuthHandler(consumerKey, consumerSecret)
+    authenticate.set_access_token(accessToken, accessTokenSecret)
+
+    # Create Twitter API using authentication information
+    api = tweepy.API(authenticate, wait_on_rate_limit = True)
+
+    # Extract n tweets from specified Twitter account
+    posts = api.user_timeline(screen_name = "RobertDowneyJr", count = 250, tweet_mode = "extended")
+    
+    # Shows the most recent tweets
+    generate_tweets(posts, 2)
+        
+    # Generate dataframe for tweets column
+    df = pd.DataFrame([tweet.full_text for tweet in posts], columns=["Tweets"])
+    
+    # Cleaning tweet text
+    df["Tweets"] = df["Tweets"].apply(clean_text)
+    
+    # Create two additional columns for subjectivity and polarity:  
+    df["Subjectivity"] = df["Tweets"].apply(get_subjectivity)
+    df["Polarity"] = df["Tweets"].apply(get_polarity)
+    pd.set_option('display.max_columns', 4)
+    
+    # Visualize the most common words through
+    word_cloud(df)
+    
+    # Visualize most frequent words in descending order
+    plt.figure(figsize=(10,10))
+    word_freq_bar_graph(df,"Tweets","Popular Words from User")
+    
+    # Create column determining if tweets are positive or negative
+    df["Analysis"] = df["Polarity"].apply(get_analysis)
+    
+    # Print only positive tweets in ascending order
+    positive_tweets_only(df)
+    
+    # Print only negative tweets in descending order
+    negative_tweets_only(df)
+    
+    # Generates visualization for the relationship
+    polarity_subjectivity_vis(df)
+    
+    # Get positve and negative %
+    pos_tweets_percentage(df)
+    neg_tweets_percentage(df)
+    
+    # Value counts
+    df["Analysis"].value_counts()
+    
+    # Generates visualization for the relationship
+    count_tweet_sentiment_vis(df)
+
+
+if __name__ == "__main__":
+    main()
