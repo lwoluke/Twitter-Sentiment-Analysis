@@ -47,7 +47,7 @@ def clean_text(txt):
     txt = re.sub(r"https?:\/\/\S+", "", txt)
     txt = re.sub(r"(@[A-Za-z0–9_]+)|[^\w\s]|#", "", txt)
     txt = emoji.replace_emoji(txt, replace='')
-    txt.strip()
+    txt = txt.strip()
     
     return txt
 
